@@ -1,0 +1,40 @@
+{
+  "name": "volted",
+  "version": "1.0.0",
+  "description": "An Ed-tech platform to supercharge your learning",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "server": "nodemon server.js",
+    "client": "npm start --prefix ../client",
+    "dev": "concurrently \"npm run server\"  \"npm run client\" -n \"server,client\" -c \"bgBlue,bgGreen\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AbhijitSarode/Volt-Ed.git"
+  },
+  "author": "Abhijit Sarode",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AbhijitSarode/Volt-Ed/issues"
+  },
+  "homepage": "https://github.com/AbhijitSarode/Volt-Ed#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.0.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.4",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.1.3",
+    "nodemailer": "^6.9.9",
+    "otp-generator": "^4.0.1",
+    "razorpay": "^2.9.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.3"
+  }
+}
