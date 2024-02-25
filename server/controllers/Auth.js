@@ -328,3 +328,108 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Upadate Password
+ *
+ * **Functionality:**
+ * - This function facilitates password change by validating the old password and updating it with a new one.
+ * - It retrieves user data from the logged-in user object to ensure the operation is performed securely.
+ *
+ * **Input:**
+ * - Expects old password, new password, and confirmation of the new password in the request body.
+ *
+ * **Validation:**
+ * - Validates the old password against the hashed password stored in the database.
+ * - Ensures that the new password matches the confirmed password to prevent mistypes.
+ *
+ * **Password Update:**
+ * - Hashes the new password securely before updating it in the database to maintain confidentiality.
+ * - Updates the password in the database associated with the user's ID.
+ *
+ * **Email Notification:**
+ * - Sends an email notification to the user upon successful password change for acknowledgment.
+ *
+ * **Returns:**
+ * - Success status indicating the password change operation was successful.
+ *
+ * @param {Object} req - The request object containing the old password, new password, and confirmation of the new password.
+ * @param {Object} res - The response object for sending the password change status.
+ * @returns {Object} - Returns a response indicating the success or failure of the password change process.
+ */
+
+exports.changePassword = async (req, res) => {
+  try {
+    // Get user data for the logged-in user from the database
+    const user = await User.findById(req.user.id);
+
+    // Fetch old password, new password, and confirm password from request body
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+
+    // Check if required fields are not empty
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Check if the old password is correct
+    const validPassword = await bcrypt.compare(oldPassword, user.password);
+
+    // If old password is incorrect
+    if (!validPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // Check if the new password and confirm password match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match",
+      });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the password in the database
+    const updatedData = await User.findByIdAndUpdate(
+      req.user.id,
+      { password: hashedPassword },
+      { new: true }
+    );
+
+    // Send email notification to the user
+    try {
+      const emailResponse = await mailSender(
+        user.email,
+        "Password Updated",
+        passwordUpdatedEmail(user.email, user.firstName)
+      );
+      console.info(
+        `Email sent to ${user.email} with response: ${emailResponse.response}`
+      );
+    } catch (error) {
+      console.error(
+        `Unable to send email to ${user.email} with error: ${error.message}`
+      );
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to update password",
+      error: error.message,
+    });
+  }
+};
