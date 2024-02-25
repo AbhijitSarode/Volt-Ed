@@ -36,6 +36,7 @@ const { passwordUpdatedEmail } = require("../mails/passwordUpdatedEmail");
  * @param {Object} res - The response object for sending the OTP delivery status and the generated OTP.
  * @returns {Object} - Returns a response indicating the success or failure of the OTP delivery process.
  */
+
 exports.sendOTP = async (req, res) => {
   try {
     // Fetch email from request body
@@ -122,6 +123,7 @@ exports.sendOTP = async (req, res) => {
  * @param {Object} res - The response object for sending registration status and user data.
  * @returns {Object} - Returns a response indicating the success or failure of the registration process.
  */
+
 exports.signup = async (req, res) => {
   try {
     // Fetch data from request body
@@ -225,6 +227,103 @@ exports.signup = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Unable to register user",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * #### Login
+ *
+ * **Functionality:**
+ * - This function handles user authentication by verifying the provided email and password.
+ * - Upon successful authentication, it issues a JWT token and sets a cookie for user session management.
+ *
+ * **Input:**
+ * - Expects email and password in the request body for authentication.
+ *
+ * **Checks:**
+ * - Validates the presence of required fields (email and password).
+ * - Compares the provided password with the hashed password stored in the database.
+ *
+ * **Token Issuance:**
+ * - Creates a JWT token containing user data (email, ID, account type) and sets expiration.
+ * - Sets the token as a cookie to maintain user session across requests.
+ *
+ * **Returns:**
+ * - Success status indicating successful login.
+ * - User data (excluding password) and the issued token for further authentication.
+ *
+ * @param {Object} req - The request object containing the user's email and password.
+ * @param {Object} res - The response object for sending authentication status and user data.
+ * @returns {Object} - Returns a response indicating the success or failure of the login process.
+ */
+exports.login = async (req, res) => {
+  try {
+    // Fetch email and password from request body
+    const { email, password } = req.body;
+
+    // Check if required fields are not empty
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    // Find the user in the database
+    const user = await User.findOne({ email }).populate("additionalDetails");
+
+    // If user is not found
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // Check if the password is correct
+    const validPassword = await bcrypt.compare(password, user.password);
+
+    // If password is incorrect
+    if (!validPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // Create payload for JWT
+    const payload = {
+      id: user._id,
+      email: user.email,
+      accountType: user.accountType,
+    };
+
+    // Create and assign a token
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    user.token = token;
+    user.password = undefined;
+
+    // Create a cookie for the token
+    const cookieOptions = {
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days
+      httpOnly: true,
+    };
+
+    return res.cookie("token", token, cookieOptions).status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to login",
       error: error.message,
     });
   }
