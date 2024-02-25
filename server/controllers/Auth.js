@@ -1,3 +1,25 @@
+/*
+  File: AuthController.js
+
+  Description:
+  This file contains functions related to user authentication, including sending OTP for registration,
+  user signup, login, password change, and logout. It interacts with models such as User, OTP, and Profile
+  to perform authentication and user-related operations.
+
+  Functions:
+  1. sendOTP: Generates and sends a unique OTP to the provided email address for user registration.
+  2. signup: Registers a new user after verifying the OTP and validating user details.
+  3. login: Authenticates the user based on email and password, issues a JWT token for authentication.
+  4. changePassword: Updates the user's password after verifying the old one, sends email notification.
+  5. logout: Clears the authentication token to log the user out.
+
+  Dependencies:
+  - otp-generator: Library for generating OTPs.
+  - bcrypt: Library for password hashing.
+  - jwt: Library for JSON Web Token handling.
+  - dotenv: Library for loading environment variables.
+*/
+
 // Import dependencies
 const OTPGenerator = require("otp-generator");
 const bcrypt = require("bcrypt");
@@ -36,7 +58,6 @@ const { passwordUpdatedEmail } = require("../mails/passwordUpdatedEmail");
  * @param {Object} res - The response object for sending the OTP delivery status and the generated OTP.
  * @returns {Object} - Returns a response indicating the success or failure of the OTP delivery process.
  */
-
 exports.sendOTP = async (req, res) => {
   try {
     // Fetch email from request body
@@ -123,7 +144,6 @@ exports.sendOTP = async (req, res) => {
  * @param {Object} res - The response object for sending registration status and user data.
  * @returns {Object} - Returns a response indicating the success or failure of the registration process.
  */
-
 exports.signup = async (req, res) => {
   try {
     // Fetch data from request body
@@ -357,7 +377,6 @@ exports.login = async (req, res) => {
  * @param {Object} res - The response object for sending the password change status.
  * @returns {Object} - Returns a response indicating the success or failure of the password change process.
  */
-
 exports.changePassword = async (req, res) => {
   try {
     // Get user data for the logged-in user from the database
@@ -451,7 +470,6 @@ exports.changePassword = async (req, res) => {
  * @param {Object} res - The response object for sending the logout status.
  * @returns {Object} - Returns a response indicating the success or failure of the logout process.
  */
-
 exports.logout = async (req, res) => {
   try {
     // Clear the token from memory and remove the cookie
