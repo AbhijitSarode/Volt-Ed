@@ -1,3 +1,19 @@
+/*
+  Description:
+  This file contains controller functions for managing sections related to courses in the application. 
+  These functions handle operations such as adding a new section to a course, deleting a section from a course, editing a section, and retrieving all sections.
+
+  Controller Functions:
+  1. createSection: Adds a new section to a course.
+  2. deleteSection: Deletes a section from a course.
+  3. updateSection: Edits a section.
+  4. getAllSections: Retrieves all sections.
+
+  Dependencies:
+  - Section model: Model representing sections data.
+  - Course model: Model representing course data.
+*/
+
 // Import files
 const Section = require("../models/Section"); // Section model
 const Course = require("../models/Course"); // Course model
