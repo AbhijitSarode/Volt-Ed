@@ -161,3 +161,44 @@ exports.updateSection = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Get all sections
+ *
+ * - Returns: success status and an array containing section data.
+ *
+ * @param {Object} req - The request object (not used in the function).
+ * @param {Object} res - The response object to send the section data.
+ * @returns {Object} - Returns a response containing the success status and the section data.
+ */
+exports.getAllSections = async (req, res) => {
+  try {
+    // Fetch courseID from the request params
+    const sections = await Section.find({}, { courseContent: true })
+      .populate("courseContent")
+      .exec(); // May give error
+
+    // If no sections are found
+    if (!sections) {
+      return res.status(404).json({
+        success: false,
+        message: "No sections found.",
+      });
+    }
+
+    // Send the success status and section data
+    return res.status(200).json({
+      success: true,
+      message: "Sections retrieved successfully.",
+      data: sections,
+    });
+  } catch (error) {
+    // Send the error message
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Unable to retrieve sections.",
+      error: error.message,
+    });
+  }
+};
