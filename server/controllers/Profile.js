@@ -78,3 +78,46 @@ exports.updateProfile = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Get All Profile Details
+ *
+ * **Functionality:**
+ * - This function retrieves all details for the logged-in user from the database.
+ *
+ * **Retrieves:**
+ * - Retrieves user details and associated additional details from the database.
+ *
+ * **Returns:**
+ * - Success status and the user data.
+ *
+ * @param {Object} req - The request object containing the user's ID.
+ * @param {Object} res - The response object to send the success status and user data.
+ * @returns {Object} - Returns a response containing the success status and user data.
+ */
+exports.getAllUserData = async (req, res) => {
+  try {
+    // Get user id from request
+    const userId = req.user.id;
+
+    // Fetch user details from database
+    const userData = await User.findById(userId)
+      .populate("additionalDetails")
+      .exec();
+
+    // Return success status and user data
+    return res.status(200).json({
+      success: true,
+      message: "User details retrieved successfully",
+      data: userData,
+    });
+  } catch (error) {
+    // Return error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to retrieve user details",
+      error: error.message,
+    });
+  }
+};
