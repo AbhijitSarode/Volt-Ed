@@ -121,3 +121,51 @@ exports.isStudent = async (req, res, next) => {
     });
   }
 };
+
+/**
+ * #### Verify Instructor Role
+ *
+ * **Functionality:**
+ * - This middleware verifies if the user has the "Instructor" role.
+ *
+ * **Account Type Retrieval:**
+ * - Retrieves the account type from the user information stored in the request object.
+ *
+ * **Role Check:**
+ * - Checks if the retrieved account type is "Instructor".
+ * - If the account type is not "Instructor", it denies access to the protected route.
+ *
+ * **Next Middleware:**
+ * - Calls the next middleware function in the stack if the user has the "Instructor" role.
+ *
+ * @param {Object} req - The request object containing the user's account type.
+ * @param {Object} res - The response object for sending the role verification status.
+ * @param {Function} next - The next middleware function in the stack.
+ * @returns {Object} - Returns a response indicating the success or failure of the role verification process.
+ */
+exports.isInstructor = async (req, res, next) => {
+  try {
+    // Retrieve account type from user information
+    const accountType = req.user.accountType;
+    console.info("Account Type: ", accountType);
+
+    // Check if user has the "Instructor" role
+    if (accountType !== "Instructor") {
+      return res.status(403).json({
+        success: false,
+        error: "Access Denied",
+        message: "You are not authorized to access this resource",
+      });
+    }
+
+    // Call next middleware in the stack
+    next();
+  } catch (error) {
+    console.error("isInstructor Middleware Error: ", error);
+    return res.status(500).json({
+      success: false,
+      error: "Unable to verify role",
+      message: error.message,
+    });
+  }
+};
