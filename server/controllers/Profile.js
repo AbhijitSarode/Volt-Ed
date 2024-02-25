@@ -1,3 +1,22 @@
+/*
+  Description:
+  This file contains controller functions for managing user-related operations in the application. These functions
+  handle operations such as updating user profile details, retrieving user data, deleting user accounts, fetching
+  enrolled courses, and updating profile pictures. These functions interact with the User and Profile models.
+
+  Controller Functions:
+  1. updateProfile: Updates user profile details in the database.
+  2. getAllUserData: Retrieves all details for the logged-in user.
+  3. deleteAccount: Deletes the user account, associated profile, and unenrolls from all courses.
+  4. getEnrolledCourses: Retrieves all courses enrolled by the user.
+  5. updateProfilePicture: Updates the user's profile picture.
+
+  Dependencies:
+  - User model: Model representing user data.
+  - Profile model: Model representing additional profile details of users.
+  - Course model: Model representing course data.
+  - uploadFileToCloudinary: Utility function for uploading files to Cloudinary.
+*/
 // Import dependencies
 require("dotenv").config(); // Load environment variables
 
