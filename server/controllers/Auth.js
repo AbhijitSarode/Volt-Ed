@@ -433,3 +433,41 @@ exports.changePassword = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Logout
+ *
+ * **Functionality:**
+ * - This function handles user logout by clearing the authentication token from memory and removing the associated cookie.
+ *
+ * **Clearance:**
+ * - Clears the authentication token stored in memory to invalidate the user session.
+ * - Removes the token cookie from the client-side to ensure the user is logged out across devices.
+ *
+ * **Returns:**
+ * - Success status indicating the user has been successfully logged out.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object for sending the logout status.
+ * @returns {Object} - Returns a response indicating the success or failure of the logout process.
+ */
+
+exports.logout = async (req, res) => {
+  try {
+    // Clear the token from memory and remove the cookie
+    req.user.token = undefined;
+    res.clearCookie("token");
+
+    res.status(200).json({
+      success: true,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to logout",
+      error: error.message,
+    });
+  }
+};
