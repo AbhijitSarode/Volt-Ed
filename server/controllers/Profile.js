@@ -232,3 +232,69 @@ exports.getEnrolledCourses = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Update Profile Picture
+ *
+ * **Functionality:**
+ * - This function expects a displayPicture file in the request files.
+ * - It uploads the displayPicture to Cloudinary and updates the user's profile picture URL in the database.
+ *
+ * **Returns:**
+ * - Success status and the updated profile picture data.
+ *
+ * @param {Object} req - The request object containing the displayPicture file and user's ID.
+ * @param {Object} res - The response object to send the updated profile picture data.
+ * @returns {Object} - Returns a response containing the success status and the updated profile picture data.
+ */
+exports.updateProfilePicture = async (req, res) => {
+  try {
+    // Get user id from request
+    const userId = req.user.id;
+
+    // Get displayPicture file from request
+    const displayPicture = req.files.displayPicture;
+
+    // Check if displayPicture file is present
+    if (!displayPicture) {
+      return res.status(400).json({
+        success: false,
+        message: "Display picture is required",
+      });
+    }
+
+    // Upload displayPicture to Cloudinary
+    const displayPictureURL = await uploadFileToCloudinary(
+      displayPicture,
+      process.env.FOLDER_NAME,
+      1000,
+      1000
+    );
+
+    console.info(
+      `Display picture is ${displayPictureURL} & uploaded to Cloudinary at ${displayPictureURL.secure_url}`
+    );
+
+    // Update user's profile picture URL in the database
+    const updateProfilePicture = await User.findByIdAndUpdate(
+      userId,
+      { image: displayPictureURL.secure_url }, // May give error
+      { new: true }
+    );
+
+    // Return success status and updated profile picture data
+    return res.status(200).json({
+      success: true,
+      message: "Profile picture updated successfully",
+      data: { updateProfilePicture, displayPictureURL },
+    });
+  } catch (error) {
+    // Return error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to update profile picture",
+      error: error.message,
+    });
+  }
+};
