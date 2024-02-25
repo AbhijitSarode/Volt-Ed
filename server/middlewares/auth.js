@@ -1,3 +1,23 @@
+/*
+  File: AuthMiddleware.js
+
+  Description:
+  This file contains middleware functions for user authentication and authorization. These middleware
+  functions are used to validate and extract user information from JWT tokens, as well as to check
+  user roles such as Student, Instructor, and Admin. The middleware functions are utilized in protecting
+  routes and endpoints that require specific user roles.
+
+  Middleware Functions:
+  1. auth: Validates and extracts user information from the JWT token.
+  2. isStudent: Checks if the user has the "Student" role.
+  3. isInstructor: Checks if the user has the "Instructor" role.
+  4. isAdmin: Checks if the user has the "Admin" role.
+
+  Dependencies:
+  - jsonwebtoken: Library for JSON Web Token handling.
+  - dotenv: Library for loading environment variables.
+*/
+
 // Import dependencies
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
