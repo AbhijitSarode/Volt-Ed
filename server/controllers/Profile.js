@@ -121,3 +121,66 @@ exports.getAllUserData = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Delete Account
+ *
+ * **Functionality:**
+ * - This function deletes the user account, associated profile, and unenrolls the user from all courses.
+ *
+ * **Deletes:**
+ * - Profile associated with the user.
+ * - Unenrolls the user from all courses.
+ * - User account from the database.
+ *
+ * **Returns:**
+ * - Success status.
+ *
+ * @param {Object} req - The request object containing the user's ID.
+ * @param {Object} res - The response object to send the success status.
+ * @returns {Object} - Returns a response containing the success status.
+ */
+exports.deleteAccount = async (req, res) => {
+  try {
+    // Get user id from request
+    const userId = req.user.id;
+
+    // Fetch user details from database
+    const user = await User.findById({ userId });
+
+    // Check if user exists in the database
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Delete profile from the database
+    await Profile.findByIdAndDelete(user.additionalDetails);
+
+    // Unenroll user from all courses
+    await Course.findByIdAndUpdate(
+      { _id: user.courses },
+      { $pullAll: { courses: user.courses } }, // May give error
+      { new: true }
+    );
+
+    // Delete user from the database
+    await User.findByIdAndDelete(userId);
+
+    // Return success status
+    return res.status(200).json({
+      success: true,
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    // Return error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to delete account",
+      error: error.message,
+    });
+  }
+};
