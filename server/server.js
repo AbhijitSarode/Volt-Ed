@@ -3,8 +3,14 @@ const express = require("express"); // Import express framework
 const dotenv = require("dotenv").config(); // Load env variables
 const cors = require("cors"); // Library to enable CORS
 
+// Import service connection files
+const connectDB = require("./config/database"); // Import database connection
+
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Connect to Database
+connectDB();
 
 // Middlewares
 app.use(express.json()); // Parse incoming json request
