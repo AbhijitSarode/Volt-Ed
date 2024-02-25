@@ -184,3 +184,51 @@ exports.deleteAccount = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Retrieve All Enrolled Courses
+ *
+ * **Functionality:**
+ * - This function retrieves all courses enrolled by the user from the database.
+ *
+ * **Returns:**
+ * - Success status and the enrolled courses data.
+ *
+ * @param {Object} req - The request object containing the user's ID.
+ * @param {Object} res - The response object to send the enrolled courses data.
+ * @returns {Object} - Returns a response containing the success status and the enrolled courses data.
+ */
+exports.getEnrolledCourses = async (req, res) => {
+  try {
+    // Get user id from request
+    const userId = req.user.id;
+
+    // Fetch user details from database
+    const userData = await User.findOne({ _id: userId })
+      .populate("courses")
+      .exec();
+
+    // If user is not enrolled in any courses
+    if (!userData.courses) {
+      return res.status(404).json({
+        success: false,
+        message: "User is not enrolled in any courses",
+      });
+    }
+
+    // Return success status and enrolled courses data
+    return res.status(200).json({
+      success: true,
+      message: "Enrolled courses retrieved successfully",
+      data: userData.courses,
+    });
+  } catch (error) {
+    // Return error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to retrieve enrolled courses",
+      error: error.message,
+    });
+  }
+};
