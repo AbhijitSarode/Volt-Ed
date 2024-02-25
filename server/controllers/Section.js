@@ -109,3 +109,55 @@ exports.deleteSection = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Edit section
+ *
+ * - Expects: SectionName in req body.
+ * - Checks: if all required fields are present.
+ * - Updates: section details in the Section database.
+ * - Returns: success status and the updated section data.
+ *
+ * @param {Object} req - The request object containing sectionName
+ * @param {Object} res - The response object to send the success status and updated section data.
+ * @returns {Object} - Returns a response containing the success status and the updated section data.
+ */
+exports.updateSection = async (req, res) => {
+  try {
+    // Fetch the SectionName & subSections from the request body
+    const { sectionName, subSections } = req.body;
+
+    // Check if the sectionName & array of subSection is present
+    if (!sectionName || !subSections) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required.",
+      });
+    }
+
+    // Update the section
+    const section = await Section.findByIdAndUpdate(
+      req.params.sectionId,
+      {
+        sectionName,
+        subSections,
+      },
+      { new: true }
+    );
+
+    // Send the success status and updated section data
+    return res.status(200).json({
+      success: true,
+      message: "Section updated successfully.",
+      data: section,
+    });
+  } catch (error) {
+    // Send the error message
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Unable to update section.",
+      error: error.message,
+    });
+  }
+};
