@@ -265,3 +265,54 @@ exports.getCategoryDetails = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Delete an existing category
+ *
+ * **Functionality:**
+ * - This function deletes an existing category from the database.
+ *
+ * **Expects:**
+ * - Expects categoryId in the request body.
+ *
+ * **Deletes:**
+ * - Deletes the category from the database.
+ *
+ * **Returns:**
+ * - Success status and a message indicating the deletion status.
+ *
+ * @param {Object} req - The request object containing the category ID.
+ * @param {Object} res - The response object to send the success status and deletion message.
+ * @returns {Object} - Returns a response containing the success status and deletion message.
+ */
+exports.deleteCategory = async (req, res) => {
+  try {
+    // Fetch category ID from the request body
+    const { categoryId } = req.body;
+
+    // If category not found
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide category ID",
+      });
+    }
+
+    // Delete the category from the database
+    await Category.findByIdAndDelete(categoryId);
+
+    // Send the success status and deletion message
+    return res.status(200).json({
+      success: true,
+      message: "Category deleted successfully",
+    });
+  } catch (error) {
+    // Send the error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to delete category",
+      error: error.message,
+    });
+  }
+};
