@@ -102,3 +102,100 @@ exports.capturePayment = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Verify Signature: Verifies the signature of Razorpay and our server for the payment.
+ *
+ * - Expects: Razorpay signature in x-razorpay-signature header.
+ * - Encrypts: the secret using sha256 algorithm.
+ * - Compares: the encrypted secret with the Razorpay signature.
+ * - If Matches: Enrolls the student in the course, sends confirmation email, and returns success status.
+ *
+ * @param {Object} req - The request object containing x-razorpay-signature header and payload.
+ * @param {Object} res - The response object to send the result.
+ * @returns {Object} - Returns a response indicating the success status, message, and enrollment details.
+ */
+exports.verifySignature = async (req, res) => {
+  try {
+    // Signatures
+    const webhoookSecret = process.env.WEBHOOK_SECRET;
+    const razorpaySignature = req.headers["x-razorpay-signature"];
+
+    // Encrypt Secret
+    const shasum = crypto.createHmac("sha256", webhoookSecret);
+    shasum.update(JSON.stringify(req.body));
+    const digest = shasum.digest("hex");
+
+    // Compare encrypted Secret & Signature
+    if (razorpaySignature === digest) {
+      console.log("Payment is authorized");
+
+      // Fetch data sent by Razorpay from notes
+      const { userId, courseId } = req.body.payload.payment.entity.notes;
+
+      try {
+        // Find course & enroll student in it
+        const enrolledCourse = await Course.findOneAndUpdate(
+          { _id: courseId },
+          { $push: { studentsEnrolled: userId } },
+          { new: true }
+        );
+
+        console.info(`Enrolled course: ${enrolledCourse}`);
+
+        if (!enrolledCourse) {
+          console.error(error.message);
+          return res.status(501).json({
+            success: false,
+            message: "Unable to find course & enroll student to it",
+          });
+        }
+
+        console.info(`Enrolled course: ${enrolledCourse}`);
+
+        // Find student & add enrolled course in it
+        const enrollStudent = await User.findOneAndUpdate(
+          { _id: userId },
+          { $push: { courses: courseId } },
+          { new: true }
+        );
+
+        console.info(`Enrolled student: ${enrollStudent}`);
+
+        // Send payment & enrollment successful mail
+        const mail = await mailSender(
+          enrollStudent.email,
+          "Congratulations from Volt-Ed",
+          courseEnrollmentEmail(
+            enrolledCourse.courseName,
+            enrollStudent.firstName
+          )
+        );
+
+        console.info(`Email: ${mail}`);
+
+        return res.status(200).json({
+          success: true,
+          message: "Signature verified & course added",
+          data: {
+            razorpaySignature,
+            enrolledCourse,
+            enrollStudent,
+          },
+        });
+      } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({
+          success: false,
+          message: "Internal error",
+        });
+      }
+    }
+  } catch (error) {
+    console.error(error.message);
+    return res.status(400).json({
+      success: false,
+      message: "Invalid request",
+    });
+  }
+};
