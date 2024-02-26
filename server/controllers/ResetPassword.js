@@ -1,3 +1,20 @@
+/*
+  Description:
+  This file contains controller functions for handling user authentication related tasks such as resetting passwords and sending reset password tokens.
+
+  Controller Functions:
+  1. resetPasswordToken: Sends a reset password email to the user with a unique link.
+  2. updatePassword: Updates the user's password after verifying the reset token.
+
+  Dependencies:
+  - bcrypt: Library for hashing passwords.
+  - crypto: Library for generating secure random tokens.
+  - User model: Model representing users data.
+  - mailSender utility function: Function to send emails using NodeMailer service.
+  - resetPasswordMail email template: Template for the reset password email.
+  - passwordUpdatedEmail email template: Template for the password update confirmation email.
+*/
+
 // Import Dependencies
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
