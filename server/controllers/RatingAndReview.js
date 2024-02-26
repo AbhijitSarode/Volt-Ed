@@ -1,3 +1,21 @@
+/*
+  Description:
+  This file contains controller functions for managing ratings and reviews related to courses in the application. 
+  These functions handle operations such as creating a new rating and review, getting the average rating for a course, retrieving all ratings and reviews, and deleting a rating and review.
+
+  Controller Functions:
+  1. createRatingAndReview: Creates a new rating and review for a course.
+  2. getAverageRating: Gets the average rating for a course.
+  3. getAllRatingReview: Retrieves all ratings and reviews from the database.
+  4. deleteRating: Deletes a rating and review.
+  5. editRating: Updates the rating and review details in the database.
+
+  Dependencies:
+  - mongoose: MongoDB object modeling tool.
+  - RatingAndReivew model: Model representing ratings and reviews data.
+  - Course model: Model representing courses data.
+*/
+
 // Import dependencies
 const { default: mongoose } = require("mongoose");
 
@@ -209,7 +227,6 @@ exports.getAllRatingReview = async (req, res) => {
  * @param {Object} res - The response object to send the result.
  * @returns {Object} - Returns a response indicating the success status.
  */
-
 exports.deleteRating = async (req, res) => {
   try {
     // Fetch rating and course ID from the request body
@@ -256,6 +273,7 @@ exports.deleteRating = async (req, res) => {
     });
   }
 };
+
 /**
  * #### Edit a rating and review
  *
