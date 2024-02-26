@@ -1,3 +1,19 @@
+/*
+  Description:
+  This file contains controller functions for managing sub-sections related to sections in the application. 
+  These functions handle operations such as creating a new sub-section, updating a sub-section, and deleting a sub-section.
+
+  Controller Functions:
+  1. createSubSection: Creates a new sub-section in a section.
+  2. updateSubSection: Updates a sub-section.
+  3. deleteSubSection: Deletes a sub-section.
+
+  Dependencies:
+  - Section model: Model representing sections data.
+  - SubSection model: Model representing sub-sections data.
+  - uploadFileToCloudinary function: Function to upload files to Cloudinary.
+*/
+
 // Import dependencies
 require("dotenv").config(); // Load environment variables
 
@@ -160,7 +176,6 @@ exports.updateSubSection = async (req, res) => {
  * @param {Object} res - The response object to send the result.
  * @returns {Object} - Returns a response indicating the success status.
  */
-
 exports.deleteSubSection = async (req, res) => {
   try {
     // Fetch the subSectionId from the request parameters
