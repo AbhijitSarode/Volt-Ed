@@ -73,3 +73,85 @@ exports.resetPasswordToken = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Update Password
+ *
+ * Functionality: Updates the user's password after verifying the reset token.
+ *
+ * - Expects: New password, confirm password, and reset token in req body.
+ * - Checks: if passwords match, if the token is valid, and if the token has expired.
+ * - Hashes: the new password.
+ * - Updates: the user's password in the database.
+ * - Sends: a confirmation email about the password update.
+ * - Returns: success status, a message, and hashed password data.
+ *
+ * @param {Object} req - The request object containing the new password, confirm password, and reset token.
+ * @param {Object} res - The response object to send the result.
+ * @returns {Object} - Returns a response indicating the success status, message, and hashed password data.
+ */
+exports.updatePassword = async (req, res) => {
+  try {
+    // Fetch data from the request
+    const { newPassword, confirmPassword, token } = req.body;
+
+    // Check if passwords match
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match.",
+      });
+    }
+
+    // Find the user with the reset token
+    const user = await User.findOne({ token });
+    const { email, firstName } = user;
+
+    // Check if token exsists in the database
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Invalid token.",
+      });
+    }
+
+    // Check if the token has expired
+    if (user.resetPasswordExpire < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "Token expired.",
+      });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update the user's password in the database
+    user.password = hashedPassword;
+    user.token = null;
+    user.resetPasswordExpires = null;
+    await user.save();
+
+    // Send the confirmation email
+    mailSender({
+      to: email,
+      subject: "Password Updated Successfully",
+      html: passwordUpdatedEmail(firstName),
+    });
+
+    // Send the success status and data
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully.",
+      data: { hashedPassword, email },
+    });
+  } catch (error) {
+    // Send the error message
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Unable to update password.",
+      error: error.message,
+    });
+  }
+};
