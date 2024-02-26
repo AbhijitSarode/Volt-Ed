@@ -234,3 +234,117 @@ exports.getCourseAllDetails = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Efit Course Details
+ *
+ * **Functionality:**
+ * - This function updates the details of an existing course in the database.
+ *
+ * **Input:**
+ * - Expects the courseId in the request body and optional updated course details.
+ *
+ * **Checks:**
+ * - Validates if at least one field to update is present.
+ * - Ensures the existence of the provided category in the database.
+ *
+ * **Processing:**
+ * - Uploads the updated thumbnail to Cloudinary if provided.
+ *
+ * **Database Updates:**
+ * - Updates the course details in the database with the provided changes.
+ *
+ * **Returns:**
+ * - Success status indicating the successful update of course details.
+ * - Message confirming the successful update of the course.
+ * - Updated course data containing the modified details.
+ *
+ * @param {Object} req - The request object containing the courseId and optional updated course details.
+ * @param {Object} res - The response object for sending the updated course details.
+ * @returns {Object} - Returns a response containing the updated course information upon successful update.
+ */
+exports.editCourse = async (req, res) => {
+  try {
+    // Fetch data from the request body
+    const {
+      courseId,
+      courseName,
+      courseDescription,
+      whatYouWillLearn,
+      price,
+      category,
+    } = req.body;
+    const thumbnail = req.files.thumbnail;
+
+    // Check if at least one field to update is present
+    if (
+      !courseName &&
+      !courseDescription &&
+      !whatYouWillLearn &&
+      !price &&
+      !category &&
+      !thumbnail
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one field to update is required",
+      });
+    }
+
+    // Get course details from the database
+    const course = await Course.findById(courseId);
+
+    // If course details are not found
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found for courseId: " + courseId,
+      });
+    }
+
+    // Get category details from the database
+    const courseCategory = await Category.findById(category);
+
+    // If category details are not found
+    if (!courseCategory) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    // Initialize updated course filed object
+    const updatedFields = {};
+
+    // Update fields if provided
+    if (courseName) updatedFields.courseName = courseName;
+    if (courseDescription) updatedFields.courseDescription = courseDescription;
+    if (whatYouWillLearn) updatedFields.whatYouWillLearn = whatYouWillLearn;
+    if (price) updatedFields.price = price;
+    if (category) updatedFields.category = category._id;
+    if (thumbnail)
+      updatedFields.thumbnail = (
+        await uploadFileToCloudinary(thumbnail, process.env.FOLDER_NAME)
+      ).secure_url;
+
+    // Update course details in the database
+    const updatedCourse = await Course.findByIdAndUpdate(
+      { _id: courseId }, // Might get error here
+      { $set: updatedFields },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Course updated successfully",
+      data: updatedCourse,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to update course",
+      error: error.message,
+    });
+  }
+};
