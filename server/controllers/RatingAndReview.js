@@ -256,3 +256,66 @@ exports.deleteRating = async (req, res) => {
     });
   }
 };
+/**
+ * #### Edit a rating and review
+ *
+ * - Expects: ratingId, courseId, rating, and review in req body.
+ * - Checks: if ratingId and courseId are present in the database.
+ * - Updates: the rating and review details.
+ * - Returns: success status and the updated rating data.
+ *
+ * @param {Object} req - The request object containing ratingId, courseId, rating, and review.
+ * @param {Object} res - The response object to send the result.
+ * @returns {Object} - Returns a response indicating the success status and the updated rating data.
+ */
+exports.editRating = async (req, res) => {
+  try {
+    // Fetch rating and course ID from the request body
+    const { ratingId, courseId, rating, review } = req.body;
+
+    // Check if ratingId and courseId are present in database
+    const rating = await RatingAndReview.findById(ratingId);
+    const course = await Course.findById(courseId);
+
+    // If rating is not found, return an error
+    if (!rating) {
+      return res.status(404).json({
+        success: false,
+        message: "Rating not found.",
+      });
+    }
+
+    // If course is not found, return an error
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found.",
+      });
+    }
+
+    // Update the rating and review
+    const updatedRating = await RatingAndReview.findByIdAndUpdate(
+      ratingId,
+      {
+        rating,
+        review,
+      },
+      { new: true }
+    );
+
+    // Send the success status and data
+    return res.status(200).json({
+      success: true,
+      message: "Rating updated successfully.",
+      data: updatedRating,
+    });
+  } catch (error) {
+    // Send the error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to update rating.",
+      error: error.message,
+    });
+  }
+};
