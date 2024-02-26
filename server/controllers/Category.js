@@ -179,3 +179,89 @@ exports.getAllCategories = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Get category details
+ *
+ * **Functionality:**
+ * - This function retrieves details of a specific category.
+ *
+ * **Expects:**
+ * - Expects category ID in the request body.
+ *
+ * **Retrieves:**
+ * - Retrieves courses for the specified category.
+ *
+ * **Calculates:**
+ * - Calculates other courses and most selling courses.
+ *
+ * **Returns:**
+ * - Success status and an object with selectedCourses, otherCourses, and mostSellingCourses.
+ *
+ * @param {Object} req - The request object containing the category ID.
+ * @param {Object} res - The response object to send the success status and category details.
+ * @returns {Object} - Returns a response containing the success status and category details.
+ */
+exports.getCategoryDetails = async (req, res) => {
+  try {
+    // Fetch category ID from the request body
+    const { categoryId } = req.body;
+
+    // If category not found
+    if (!categoryId) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide category ID",
+      });
+    }
+
+    // Get courses for the specified category
+    const selectedCourses = await Course.findById(categoryId)
+      .populate("courses")
+      .exec();
+
+    // If courses not found
+    if (!selectedCourses) {
+      return res.status(404).json({
+        success: false,
+        message: "Courses not found",
+      });
+    }
+
+    // Get other categories
+    const otherCategories = await Category.find({ _id: { $ne: categoryId } })
+      .populate("courses")
+      .exec();
+
+    let otherCourses = [];
+    for (let category of otherCategories) {
+      otherCourses = [...otherCourses, ...category.courses];
+    }
+
+    // Get most selling courses for the specified category
+    const allCategories = await Category.find().populate("courses").exec();
+    const allCourses = allCategories.flatMap((category) => category.courses);
+    const mostSellingCourses = allCourses
+      .sort((a, b) => b.sold - a.sold)
+      .slice(0, 10);
+
+    // Send the success status and category details
+    return res.status(200).json({
+      success: true,
+      message: "Retrieved category details successfully",
+      data: {
+        selectedCourses,
+        otherCourses,
+        mostSellingCourses,
+      },
+    });
+  } catch (error) {
+    // Send the error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to retrieve category details",
+      error: error.message,
+    });
+  }
+};
