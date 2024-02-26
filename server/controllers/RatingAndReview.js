@@ -159,3 +159,40 @@ exports.getAverageRating = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Get All Ratings: Retrieves all ratings and reviews from the database.
+ *
+ * - Returns: success status and all reviews data.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object to send the result.
+ * @returns {Object} - Returns a response indicating the success status and all reviews data.
+ */
+exports.getAllRatingReview = async (req, res) => {
+  try {
+    const allReviews = await RatingAndReview.find({})
+      .sort({ rating: "desc" })
+      .populate({
+        path: "user",
+        select: "firstName lastName email image", // Specify the fields to populate from the "Profile" model
+      })
+      .populate({
+        path: "course",
+        select: "courseName", //Specify the fields to populate from the "Course" model
+      })
+      .exec();
+
+    res.status(200).json({
+      success: true,
+      data: allReviews,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to retrieve the rating and review for the course",
+      error: error.message,
+    });
+  }
+};
