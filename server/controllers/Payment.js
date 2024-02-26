@@ -1,3 +1,22 @@
+/*
+  Description:
+  This file contains controller functions for handling payments related to course enrollment using the Razorpay payment gateway. 
+  These functions include capturing payments and verifying payment signatures.
+
+  Controller Functions:
+  1. capturePayment: Initiates the Razorpay payment process for course enrollment.
+  2. verifySignature: Verifies the signature of Razorpay and our server for the payment.
+
+  Dependencies:
+  - mongoose: MongoDB object modeling tool.
+  - dotenv: Module to load environment variables.
+  - instance from Razorpay configuration file: Razorpay instance for initiating payments.
+  - Course model: Model representing courses data.
+  - User model: Model representing users data.
+  - mailSender utility function: Function to send emails using NodeMailer service.
+  - courseEnrollmentEmail email template: Template for successful course enrollment email.
+*/
+
 // Import dependencies
 const { default: mongoose } = require("mongoose");
 require("dotenv").config(); // Load environment variables
