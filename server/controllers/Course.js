@@ -167,3 +167,70 @@ exports.createCourse = async (req, res) => {
     }
   };
 };
+
+/**
+ * #### Fetch Course Details
+ *
+ * **Functionality:**
+ * - This function retrieves detailed information about a specific course from the database.
+ *
+ * **Input:**
+ * - Expects the courseId in the request body.
+ *
+ * **Populations:**
+ * - Populates instructor details, category, rating and reviews, and course content with sub-section details to provide comprehensive information.
+ *
+ * **Returns:**
+ * - Success status indicating the successful retrieval of course details.
+ * - Message confirming the successful retrieval of detailed data about the specified course.
+ * - Detailed data about the specified course including instructor details, category, rating and reviews, and course content with sub-section details.
+ *
+ * @param {Object} req - The request object containing the courseId.
+ * @param {Object} res - The response object for sending the detailed course data.
+ * @returns {Object} - Returns a response containing detailed course information upon successful retrieval.
+ */
+exports.getCourseAllDetails = async (req, res) => {
+  try {
+    // Fetch courseId from the request body
+    const { courseId } = req.body;
+
+    // Get all course details from the database
+    const courseAllData = await Course.find({ _id: courseId })
+      .populate({
+        path: "instructor",
+        populate: {
+          path: "addtionaDetails",
+        },
+      })
+      .populate("category")
+      .populate("ratingAndReviews")
+      .populate({
+        path: "courseContent",
+        populate: {
+          path: "subSection",
+        },
+      })
+      .exec();
+
+    // If course details are not found
+    if (!courseAllData) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Course details fetched successfully",
+      data: courseAllData,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to fetch course details",
+      error: error.message,
+    });
+  }
+};
