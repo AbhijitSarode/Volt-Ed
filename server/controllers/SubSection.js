@@ -80,3 +80,69 @@ exports.createSubSection = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Update a Sub Section
+ *
+ * - Expects: title, description, timeDuration, videoURL, and subSectionID in req body.
+ * - Checks: if subSectionID is present.
+ * - Data: Updates the sub-section with the provided details.
+ * - Returns: success status and the updated sub-section data.
+ *
+ * @param {Object} req - The request object containing title, description, timeDuration, videoURL, and subSectionID.
+ * @param {Object} res - The response object to send the result.
+ * @returns {Object} - Returns a response containing the success status and the updated sub-section data.
+ */
+exports.updateSubSection = async (req, res) => {
+  try {
+    // Fetch data from the request body
+    const { title, description, timeDuration, videoURL, subSectionID } =
+      req.body;
+
+    // Check if required fields are present
+    if (!subSectionID || !title || !description || !timeDuration || !videoURL) {
+      return res.status(400).json({
+        success: false,
+        message: "Required data is not present.",
+      });
+    }
+
+    // Check if subSection is present in database
+    const subSection = await SubSection.findById(subSectionID);
+
+    // If subSection is not found, return an error
+    if (!subSection) {
+      return res.status(404).json({
+        success: false,
+        message: "Sub-section not found.",
+      });
+    }
+
+    // Update the sub-section
+    const updatedSubSection = await SubSection.findByIdAndUpdate(
+      subSectionID,
+      {
+        title,
+        description,
+        timeDuration,
+        videoUrl: videoURL,
+      },
+      { new: true }
+    );
+
+    // Send the success status and data
+    return res.status(200).json({
+      success: true,
+      message: "Sub-section updated successfully.",
+      data: updatedSubSection,
+    });
+  } catch (error) {
+    // Send the error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to update sub-section.",
+      error: error.message,
+    });
+  }
+};
