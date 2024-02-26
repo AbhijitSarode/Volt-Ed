@@ -196,3 +196,63 @@ exports.getAllRatingReview = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Delete a rating and review
+ *
+ * - Expects: ratingId and courseId in req body.
+ * - Checks: if ratingId and courseId are present in the database.
+ * - Deletes: the rating from the RatingAndReview collection and removes its reference from the Course collection.
+ * - Returns: success status.
+ *
+ * @param {Object} req - The request object containing ratingId and courseId.
+ * @param {Object} res - The response object to send the result.
+ * @returns {Object} - Returns a response indicating the success status.
+ */
+
+exports.deleteRating = async (req, res) => {
+  try {
+    // Fetch rating and course ID from the request body
+    const { ratingId, courseId } = req.body;
+
+    // Check if ratingId and courseId are present in database
+    const rating = await RatingAndReview.findById(ratingId);
+    const course = await Course.findById(courseId);
+
+    // If rating is not found, return an error
+    if (!rating) {
+      return res.status(404).json({
+        success: false,
+        message: "Rating not found.",
+      });
+    }
+
+    // If course is not found, return an error
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found.",
+      });
+    }
+
+    // Delete the rating in course and rating collection
+    await RatingAndReview.deleteOne(rating);
+    await Course.findByIdAndUpdate(courseId, {
+      $pull: { ratingsAndReviews: ratingId },
+    });
+
+    // Send the success status
+    return res.status(200).json({
+      success: true,
+      message: "Rating deleted successfully.",
+    });
+  } catch (error) {
+    // Send the error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to delete rating.",
+      error: error.message,
+    });
+  }
+};
