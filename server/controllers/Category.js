@@ -141,3 +141,41 @@ exports.editCategory = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Get All Categories: Retrieves all categories from the database
+ *
+ * **Functionality:**
+ * - This function retrieves all categories from the database.
+ *
+ * **Returns:**
+ * - Success status and an array of all categories with name and description.
+ *
+ * @param {Object} req - The request object (not used).
+ * @param {Object} res - The response object to send the success status and categories data.
+ * @returns {Object} - Returns a response containing the success status and an array of categories.
+ */
+exports.getAllCategories = async (req, res) => {
+  try {
+    // Get all categories from the database
+    const categories = await Category.find(
+      {},
+      { name: true, description: true }
+    ).exec();
+
+    // Send the success status and an array of categories
+    return res.status(200).json({
+      success: true,
+      message: "Retrieved all categories successfully",
+      data: categories,
+    });
+  } catch (error) {
+    // Send the error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to retrieve categories",
+      error: error.message,
+    });
+  }
+};
