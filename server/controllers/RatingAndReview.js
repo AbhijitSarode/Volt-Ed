@@ -96,3 +96,66 @@ exports.createRatingAndReview = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Get average rating for a course
+ *
+ * - Expects: courseId in req body.
+ * - Calculates: the average rating for the specified course.
+ * - Returns: success status and the average rating.
+ *
+ * @param {Object} req - The request object containing the courseId.
+ * @param {Object} res - The response object to send the result.
+ * @returns {Object} - Returns a response indicating the success status and the average rating.
+ */
+
+exports.getAverageRating = async (req, res) => {
+  try {
+    // Fetch the courseId from the request body
+    const courseId = req.body.courseId;
+
+    // Check if the courseId is present
+    if (!courseId) {
+      return res.status(400).json({
+        success: false,
+        message: "Course ID is required.",
+      });
+    }
+
+    // Calculate the average rating
+    const course = await RatingAndReivew.aggregate([
+      {
+        $match: { course: mongoose.Types.ObjectId(courseId) },
+      },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: "$rating" },
+        },
+      },
+    ]);
+
+    // If no rating is found, return an error
+    if (course.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No rating found for the course.",
+      });
+    }
+
+    // Send the success status and data
+    return res.status(200).json({
+      success: true,
+      message: "Average rating fetched successfully.",
+      data: course[0],
+    });
+  } catch (error) {
+    // Send the error message
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to fetch average rating.",
+      error: error.message,
+    });
+  }
+};
