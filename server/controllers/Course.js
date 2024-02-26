@@ -1,3 +1,23 @@
+/*
+  Description:
+  This file contains controller functions for managing courses in the application. These functions
+  handle operations such as creating a new course, retrieving course details, editing existing courses,
+  and deleting courses. These functions interact with the Course model and other related models such as
+  User and Category. Additionally, they utilize utility functions for uploading files to Cloudinary.
+
+  Controller Functions:
+  1. createCourse: Adds a new course to the database.
+  2. getAllCourses: Retrieves basic details of all courses.
+  3. getCourseAllDetails: Retrieves detailed information about a specific course.
+  4. editCourse: Updates details of an existing course.
+  5. deleteCourse: Removes a course from the database.
+
+  Dependencies:
+  - Course model: Model representing course data.
+  - Category model: Model representing category data.
+  - User model: Model representing user data.
+  - uploadFileToCloudinary: Utility function for uploading files to Cloudinary.
+*/
 // Import files
 const Course = require("../models/Course"); // Course model
 const Category = require("../models/Category"); // Category model
