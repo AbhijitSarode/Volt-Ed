@@ -348,3 +348,56 @@ exports.editCourse = async (req, res) => {
     });
   }
 };
+
+/**
+ * #### Delete Course
+ *
+ * **Functionality:**
+ * - This function removes a course from the database along with its related records in User and Category databases.
+ *
+ * **Input:**
+ * - Expects the courseId in the request body.
+ *
+ * **Processing:**
+ * - Removes the specified course from the database.
+ * - Updates related records in User and Category databases to remove the course reference.
+ *
+ * **Returns:**
+ * - Success status indicating the successful deletion of the course.
+ * - Message confirming the successful deletion of the course.
+ *
+ * @param {Object} req - The request object containing the courseId to be deleted.
+ * @param {Object} res - The response object for sending the deletion status.
+ * @returns {Object} - Returns a response indicating the deletion status upon successful deletion.
+ */
+exports.deleteCourse = async (req, res) => {
+  try {
+    // Fetch courseId from the request body
+    const { courseId } = req.body;
+
+    // Remove the specified course from the database
+    await Course.findByIdAndRemove(courseId);
+
+    // Update related records in User and Category databases
+    await User.updateMany(
+      { courses: courseId },
+      { $pull: { courses: courseId } }
+    );
+    await Category.updateMany(
+      { courses: courseId },
+      { $pull: { courses: courseId } }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Course deleted successfully",
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to delete course",
+      error: error.message,
+    });
+  }
+};
