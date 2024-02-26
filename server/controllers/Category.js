@@ -1,3 +1,20 @@
+/*
+  Description:
+  This file contains controller functions for managing categories in the application. These functions
+  handle operations such as creating a new category, retrieving category details, updating existing categories,
+  and deleting categories. These functions interact with the Category model.
+
+  Controller Functions:
+  1. createCategory: Adds a new category to the database.
+  2. editCategory: Updates details of an existing category.
+  3. getAllCategories: Retrieves all categories from the database.
+  4. getCategoryDetails: Retrieves details of a specific category.
+  5. deleteCategory: Deletes an existing category.
+
+  Dependencies:
+  - Category model: Model representing category data.
+*/
+
 // Import files
 const Category = require("../models/Category"); // Category model
 
