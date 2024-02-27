@@ -1,3 +1,78 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: hidden;
+}
+
+.custom-gradient1 {
+  background: linear-gradient(45deg, #1fa2ff, #12d8fa, #a6ffcb);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.custom-gradient2 {
+  background: linear-gradient(45deg, #5433ff, #20bdff, #a5fecb);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.custom-gradient3 {
+  background: linear-gradient(45deg, #ff512f, #f09819);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.custom-gradient4 {
+  background: linear-gradient(45deg, #e65c00, #f9d423);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.custom-gradient5 {
+  background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.code-gradient1 {
+  background: linear-gradient(
+    124deg,
+    #8a2be2 -6.46%,
+    #ffa500 59.04%,
+    #f8f8ff 124.53%
+  );
+  filter: blur(54px);
+  transform: translate(100%, -10%);
+  opacity: 20%;
+}
+
+.code-gradient2 {
+  background: linear-gradient(
+    118deg,
+    #1fa2ff -3.62%,
+    #12d8fa 50.44%,
+    #a6ffcb 104.51%
+  );
+  filter: blur(54px);
+  transform: translate(100%, -10%);
+  opacity: 20%;
+}
+
+.homepage_bg {
+  background-image: url("../src/assets/Images/bghome.svg");
+}
+
+.input {
+  box-shadow: 0px 2px 2.5px 1px rgba(0, 0, 0, 0.25);
+}
