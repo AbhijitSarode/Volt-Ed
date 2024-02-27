@@ -5,7 +5,7 @@ import HighlightText from "../../common/HighlightText";
 // Import media
 import video from "../../../assets/Images/banner.mp4";
 
-const Hero = () => {
+const HeroSection = () => {
   return (
     <section className="mx-auto flex flex-col max-w-maxContent py-[25vh] h-screen justify-center">
       <div className="flex justify-center items-center flex-col">
@@ -43,4 +43,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default HeroSection;

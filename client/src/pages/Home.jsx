@@ -1,10 +1,10 @@
 // Import Components
-import Hero from "../components/core/HomePage/Hero";
+import HeroSection from "../components/core/HomePage/HeroSection";
 
 const Home = () => {
   return (
     <>
-      <Hero />
+      <HeroSection />
     </>
   );
 };
