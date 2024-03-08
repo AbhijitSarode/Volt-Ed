@@ -5,6 +5,11 @@ import { BsArrowRight } from "react-icons/bs";
 import Button from "../../common/Button";
 import Code from "./Code";
 
+/**
+ * This component represents an each code block on the `Home` page.
+ * This component takes heading, subHeading, buttons, codeBlock(and its props).
+ * This component is used in the `CodeSection` component.
+ */
 const CodeBlock = ({
   position,
   heading,

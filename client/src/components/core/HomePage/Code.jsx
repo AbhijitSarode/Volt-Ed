@@ -1,6 +1,11 @@
 // Import dependencies
 import { TypeAnimation } from "react-type-animation";
 
+/**
+ * This component represents an animating code syntax highlighting.
+ * This component takes code, codeColor, backgroundGradient as props.
+ * This component is used in the `CodeBlock` component.
+ */
 const Code = ({ codeColor, codeBlock, backgroundGradient }) => {
   return (
     <code className="flex flex-row w-2/4">

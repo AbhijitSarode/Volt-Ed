@@ -2,6 +2,10 @@
 import CodeBlock from "./CodeBlock";
 import HighlightText from "../../common/HighlightText";
 
+/**
+ * Showcases animated code snippets which consists of two `CodeBlock` components displaying course information and code snippets.
+ * This compoenent is used in the `Home` page.
+ */
 const CodeSection = () => {
   return (
     <section className="h-full bg-richblack-800 flex flex-col">
