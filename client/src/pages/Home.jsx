@@ -2,6 +2,7 @@
 import HeroSection from "../components/core/HomePage/HeroSection";
 import CodeSection from "../components/core/HomePage/CodeSection";
 import ExploreMoreSection from "../components/core/HomePage/ExploreMoreSection";
+import TimelineSection from "../components/core/HomePage/TimelineSection";
 
 const Home = () => {
   return (
@@ -9,6 +10,7 @@ const Home = () => {
       <HeroSection />
       <CodeSection />
       <ExploreMoreSection />
+      <TimelineSection />
     </>
   );
 };
