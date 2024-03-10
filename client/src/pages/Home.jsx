@@ -4,6 +4,7 @@ import CodeSection from "../components/core/HomePage/CodeSection";
 import ExploreMoreSection from "../components/core/HomePage/ExploreMoreSection";
 import TimelineSection from "../components/core/HomePage/TimelineSection";
 import LearningLanguageSection from "../components/core/HomePage/LearningLanguageSection";
+import InstructorSection from "../components/core/HomePage/InstructorSection";
 
 const Home = () => {
   return (
@@ -13,6 +14,7 @@ const Home = () => {
       <ExploreMoreSection />
       <TimelineSection />
       <LearningLanguageSection />
+      <InstructorSection />
     </>
   );
 };
