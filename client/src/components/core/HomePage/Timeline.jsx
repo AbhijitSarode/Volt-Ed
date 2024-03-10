@@ -1,3 +1,4 @@
+// Importing Images
 import TimeLineImage from "../../../assets/Images/TimelineImage.png";
 import Logo1 from "../../../assets/TimeLineLogo/Logo1.svg";
 import Logo2 from "../../../assets/TimeLineLogo/Logo2.svg";
@@ -26,7 +27,10 @@ const TimeLine = [
     Description: "Code your way to a solution",
   },
 ];
-
+/**
+ * Showcases the timeline by iterating over the `TimeLine` array and displaying the logo, heading and description.
+ * This component is used in the `TimelineSection` component.
+ */
 const Timeline = () => {
   return (
     <div className="flex flex-col lg:flex-row gap-20 mb-20 items-center mx-auto w-11/12 max-w-maxContent justify-between md:flex-row">

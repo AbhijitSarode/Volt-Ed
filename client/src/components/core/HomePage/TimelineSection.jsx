@@ -1,6 +1,11 @@
+// Import Components
 import HighlightText from "../../common/HighlightText";
 import Timeline from "./Timeline";
 
+/**
+ * Showcases the timeline section which consists of a heading and a `Timeline` component.
+ * This component is used in the `Home` page.
+ */
 const TimelineSection = () => {
   return (
     <div className=" text-richblack-700">
